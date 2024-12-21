@@ -1,4 +1,3 @@
-# Check if Docker and docker-compose are installed and running
 check_docker_installed = \
 	if ! command -v docker > /dev/null 2>&1; then \
 		echo "Error: Docker is not installed. Please install Docker to proceed. https://docs.docker.com/engine/install/"; \
@@ -17,13 +16,11 @@ check_docker_running = \
 		exit 1; \
 	fi
 
-# Wrapper to check Docker and docker-compose before any commands
 pre_checks:
 	@$(check_docker_installed)
 	@$(check_docker_compose_installed)
 	@$(check_docker_running)
 
-# Add pre-checks to your commands
 all: pre_checks up migrate seed
 
 up: pre_checks
