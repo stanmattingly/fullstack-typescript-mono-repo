@@ -1,19 +1,17 @@
 name: Run Tests
 
 on:
-  push: # Trigger tests on push
+  push:
     branches:
-      - main # Specify the branches you want to run tests on
-  pull_request: # Trigger tests on pull requests
+      - main
+  pull_request:
     branches:
       - main
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18, 22]
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -21,7 +19,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 22
 
       - name: Install dependencies
         run: npm install
