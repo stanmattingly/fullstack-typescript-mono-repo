@@ -73,6 +73,8 @@ export default [
         NodeJS: 'readonly',
         require: 'readonly',
         URL: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
       },
     },
     plugins: {

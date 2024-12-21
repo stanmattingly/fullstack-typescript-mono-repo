@@ -20,12 +20,14 @@ const logErrors = (err: Error, req: Request, res: Response, next: NextFunction):
 };
 
 // Error handling middleware
-const errorHandler = (err: Error, req: Request, res: Response): void => {
+const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction): void => {
   if (!res.headersSent) {
     res.status(500).json({
       error: 'Internal server error',
       message: err.message,
     });
+  } else {
+    next(err); // Pass to default error handler if headers are already sent
   }
 };
 
@@ -55,11 +57,6 @@ app.get('/health', (req, res) => {
 // Register API routes
 app.use('/', apiRoutes);
 
-// Error handling (must be after routes)
-app.use(logErrors);
-app.use(errorHandler);
-
-// 404 handler for unmatched routes
 app.use((_req: Request, res: Response): void => {
   res.status(404).json({
     error: 'Not Found',
@@ -67,9 +64,12 @@ app.use((_req: Request, res: Response): void => {
   });
 });
 
+// Error handling (must be after routes)
+app.use(logErrors);
+app.use(errorHandler);
+
 // Server instances
 let httpServer: Server | null = null;
-
 
 // Graceful shutdown handling
 const shutdown = async (signal: string) => {
