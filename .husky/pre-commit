@@ -1,2 +1,1 @@
-# All we need to do is to run lint-staged
 npx lint-staged

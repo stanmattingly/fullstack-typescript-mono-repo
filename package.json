@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "lint-staged": "lint-staged",
     "lint:fix": "eslint . --fix",
+    "prepare": "husky",
     "test": "npx jest"
   },
   "lint-staged": {
