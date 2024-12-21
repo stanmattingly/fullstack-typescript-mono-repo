@@ -6,6 +6,6 @@ export async function up(knex: Knex): Promise<void> {
   // Create tables in order of foreign key dependencies
 }
 
-export async function down(knex: Knex): Promise<void> {
+export async function down(_knex: Knex): Promise<void> {
   // Drop tables in reverse order to handle foreign key constraints
 }

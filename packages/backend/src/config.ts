@@ -1,5 +1,3 @@
-import { S3Client } from '@aws-sdk/client-s3';
-import { SQSClient } from '@aws-sdk/client-sqs';
 import dotenv from 'dotenv';
 import path from 'path';
 
@@ -8,25 +6,6 @@ const env = process.env.NODE_ENV || 'development';
 // Load the corresponding .env file
 dotenv.config({
   path: path.resolve(process.cwd(), `.env.${env}`),
-});
-
-const s3Client = new S3Client({
-  endpoint: process.env.AWS_ENDPOINT || 'http://aws:4566', // LocalStack endpoint
-  region: process.env.AWS_REGION || 'us-east-1', // Default region
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY || 'test', // Default LocalStack credentials
-    secretAccessKey: process.env.AWS_SECRET_KEY || 'test',
-  },
-  forcePathStyle: true, // Necessary for LocalStack compatibility
-});
-
-const sqsClient = new SQSClient({
-  endpoint: process.env.AWS_ENDPOINT || 'http://aws:4566', // LocalStack endpoint
-  region: process.env.AWS_REGION || 'us-east-1', // Default region
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY || 'test', // Default LocalStack credentials
-    secretAccessKey: process.env.AWS_SECRET_KEY || 'test',
-  },
 });
 
 // Export environment variables
