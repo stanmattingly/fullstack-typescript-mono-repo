@@ -1,0 +1,92 @@
+services:
+  base:
+    image: mono-base
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.base
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.backend
+    ports:
+      - '8000:8000'
+      - '8050:8050'
+    volumes:
+      - ./:/app # Mount the entire monorepo for workspaces to function
+      - backend_node_modules:/app/node_modules
+    user: '${UID:-1000}:${GID:-1000}'
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgres://postgres:password@postgres:5432/dev-db
+      - AWS_ENDPOINT=http://aws:4566 # LocalStack endpoint
+      - AWS_REGION=us-east-1 # Region
+      - AWS_ACCESS_KEY_ID=test # LocalStack default access key
+      - AWS_SECRET_ACCESS_KEY=test # LocalStack default secret key
+      - S3_BUCKET_NAME=dev-bucket # Your S3 bucket
+      - DB_USER=postgres
+      - DB_PASS=password
+      - DB_NAME=dev-db
+      - DB_HOST=postgres
+    depends_on:
+      - base
+      - aws
+      - postgres
+
+  frontend:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.frontend
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./:/app # Mount the entire monorepo for workspaces to function
+      - frontend_node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - backend
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dev-db
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  aws:
+    image: localstack/localstack:3.4
+    ports:
+      - '4566:4566'
+    environment:
+      SERVICES: s3,sqs
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_REGION: us-east-1
+    volumes:
+      - 'localstack-data:/var/lib/localstack'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - ./localstack_config:/etc/localstack/init/ready.d
+      - ./healthcheck.sh:/healthcheck.sh
+    healthcheck:
+      test:
+        - CMD
+        - bash
+        - -c
+        - |
+          awslocal s3api list-buckets --query "Buckets[].Name" --output text | grep -q "dev-bucket" && \
+          awslocal sqs list-queues --query "QueueUrls[]" --output text | grep -q "dev-queue"
+      interval: 5s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+
+volumes:
+  postgres-data:
+  localstack-data:
+  frontend_node_modules:
+  backend_node_modules:

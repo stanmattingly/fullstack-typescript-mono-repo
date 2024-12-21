@@ -1,0 +1,10 @@
+FROM mono-base:latest
+
+# Set the working directory to frontend for the start command
+WORKDIR /app/packages/frontend
+
+# Expose the React development server port
+EXPOSE 3000
+
+# Start the development server
+CMD ["npm", "start"]

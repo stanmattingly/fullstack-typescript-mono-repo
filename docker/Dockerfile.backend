@@ -1,0 +1,10 @@
+FROM mono-base:latest
+
+WORKDIR /app/packages/backend
+
+# Expose the application ports
+EXPOSE 8000
+EXPOSE 8050
+
+# Command to run the app
+CMD ["npm", "run", "start:dev"]

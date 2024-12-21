@@ -1,0 +1,9 @@
+FROM mono-base:latest
+
+WORKDIR /app/packages/backend
+
+# Expose the worker port
+EXPOSE 8040
+
+# Command to run the worker
+CMD ["npm", "run", "start:worker:dev"]
